@@ -14,7 +14,7 @@ class SudokuBoard:
             for col in range(self.size):
                 if grid[row][col] != 0:
                     self.move(row, col, grid[row][col])
-        return
+        print("############### Board is filled ###############")
     
     def is_valid_move(self, row, col, value):        
         for i in range(self.size):

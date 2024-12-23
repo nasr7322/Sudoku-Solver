@@ -21,7 +21,7 @@ class SudokuSolver:
         return False
     
     def select_variable(self):
-        min_domain = 10
+        min_domain = 2 ** 31
         chosen_cell = None
         for cell in self.board.domains:
             if self.board.grid[cell[0]][cell[1]] == 0 and len(self.board.domains[cell]) < min_domain:
@@ -78,7 +78,10 @@ if __name__ == "__main__":
                 [7, 6, 3, 4, 1, 8, 2, 5, 9]]
     board.fill(sudoku)
     solver = SudokuSolver(board)
-    if solver.solve():
+    solver.solve()
+    if len(solver.steps) > 0:
+        for step in solver.steps:
+            print(f"Move: {step[0]} -> {step[1]}")
         print("Sudoku solved:")
         for row in board.grid:
             print(row)
