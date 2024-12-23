@@ -49,7 +49,7 @@ class SudokuUtils:
 
 
     @staticmethod
-    def remove_numbers(board, non_empty_cells):
+    def remove_cells(board, non_empty_cells):
         puzzle = board.copy()
         cells = [(i, j) for i in range(9) for j in range(9)]
         random.shuffle(cells)
@@ -76,7 +76,7 @@ class SudokuUtils:
     @staticmethod
     def generate_sudoku(non_empty_cells=30):
         complete_board = SudokuUtils.generate_complete_board()
-        puzzle = SudokuUtils.remove_numbers(complete_board, non_empty_cells)
+        puzzle = SudokuUtils.remove_cells(complete_board, non_empty_cells)
         return puzzle
 
 
