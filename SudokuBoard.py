@@ -1,4 +1,5 @@
 import random
+import queue
 
 class SudokuBoard:
     def __init__(self, size=9):
@@ -15,25 +16,67 @@ class SudokuBoard:
         return
     
     def is_valid_move(self, row, col, value):
-        # checking rows and cols
-        for i in range(self.size):
-            if self.grid[row][i] == value or self.grid[i][col] == value:
-                return False
-        # checking 3 * 3 boxes
-        box_start_row = (row // 3) * 3
-        box_start_col = (col // 3) * 3
-        for i in range(3):
-            for j in range(3):
-                if self.grid[box_start_row + i][box_start_col + j] == value:
-                    return False
-
-        return True
+        return self.arc_consistency(row, col, value)[0]
 
     def move(self, row, col, value):
+        valid, changed_domains = self.arc_consistency(row, col, value)
+        if not valid:
+            print(f"Invalid move: ({row}, {col}) -> {value}")
+            return
         self.grid[row][col] = value
-        changed_domains = self.update_domain(row, col, value)
         self.print_move(row, col, value)
         self.print_changed_domains(changed_domains)
+
+    def arc_consistency(self, cell_row, cell_col, cell_value):
+        constraints_queue = queue.Queue()
+        self.original_domains = self.domains.copy()
+        self.domains[(cell_row, cell_col)] = {cell_value}
+        constraints_queue.put((cell_row, cell_col))
+          
+        if not self.revise_neighbors(cell_row, cell_col, constraints_queue):
+            self.domains = self.original_domains
+            return False, {}
+            
+        while not constraints_queue.empty():
+            row, col = constraints_queue.get()
+            if not self.revise_neighbors(row, col, constraints_queue):
+                self.domains = self.original_domains
+                return False, {}
+        return True, {cell: (self.original_domains[cell].copy(), self.domains[cell].copy()) for cell in self.domains}
+    
+    def revise_neighbors(self, cell_row, cell_col, constraints_queue):
+        for row in range(self.size):
+            if row == cell_row:
+                continue
+            for value in self.domains[(row, cell_col)]:
+                if self.domains[(cell_row, cell_col)] == {value}:
+                    self.domains[(row, cell_col)].discard(value)
+                    if len(self.domains[(row, cell_col)]) == 0:
+                        return False
+                    constraints_queue.put((row, cell_col))
+        for col in range(self.size):
+            if col == cell_col:
+                continue
+            for value in self.domains[(cell_row, col)]:
+                if self.domains[(cell_row, cell_col)] == {value}:
+                    self.domains[(cell_row, col)].discard(value)
+                    if len(self.domains[(cell_row, col)]) == 0:
+                        return False
+                    constraints_queue.put((cell_row, col))
+        
+        box_start_row = (cell_row // 3) * 3
+        box_start_col = (cell_col // 3) * 3
+        for row in range(3):
+            for col in range(3):
+                if box_start_row + row == cell_row and box_start_col + col == cell_col:
+                    continue
+                for value in self.domains[(box_start_row + row, box_start_col + col)]:
+                    if self.domains[(cell_row, cell_col)] == {value}:
+                        self.domains[(box_start_row + row, box_start_col + col)].discard(value)
+                        if len(self.domains[(box_start_row + row, box_start_col + col)]) == 0:
+                            return False
+                        constraints_queue.put((box_start_row + row, box_start_col + col))
+        return True
 
     def update_domain(self, row, col, value):
         self.domains[(row, col)] = set()
