@@ -1,5 +1,6 @@
-import random
+import copy
 import queue
+import random
 
 class SudokuBoard:
     def __init__(self, size=9):
@@ -22,14 +23,15 @@ class SudokuBoard:
         valid, changed_domains = self.arc_consistency(row, col, value)
         if not valid:
             print(f"Invalid move: ({row}, {col}) -> {value}")
-            return
+            return False
         self.grid[row][col] = value
         self.print_move(row, col, value)
         self.print_changed_domains(changed_domains)
+        return True
 
     def arc_consistency(self, cell_row, cell_col, cell_value):
         constraints_queue = queue.Queue()
-        self.original_domains = self.domains.copy()
+        self.original_domains = copy.deepcopy(self.domains)
         self.domains[(cell_row, cell_col)] = {cell_value}
         constraints_queue.put((cell_row, cell_col))
           
@@ -42,13 +44,16 @@ class SudokuBoard:
             if not self.revise_neighbors(row, col, constraints_queue):
                 self.domains = self.original_domains
                 return False, {}
-        return True, {cell: (self.original_domains[cell].copy(), self.domains[cell].copy()) for cell in self.domains}
+
+        return True, {cell: (self.original_domains[cell].copy(), self.domains[cell].copy()) for cell in self.domains if self.original_domains[cell] != self.domains[cell]}
     
     def revise_neighbors(self, cell_row, cell_col, constraints_queue):
         for row in range(self.size):
             if row == cell_row:
                 continue
-            for value in self.domains[(row, cell_col)]:
+            revised_domain = self.domains[(row, cell_col)].copy()
+            for value in revised_domain:
+                # domain reduction when the cell has only one value
                 if self.domains[(cell_row, cell_col)] == {value}:
                     self.domains[(row, cell_col)].discard(value)
                     if len(self.domains[(row, cell_col)]) == 0:
@@ -57,7 +62,8 @@ class SudokuBoard:
         for col in range(self.size):
             if col == cell_col:
                 continue
-            for value in self.domains[(cell_row, col)]:
+            revised_domain = self.domains[(cell_row, col)].copy()
+            for value in revised_domain:
                 if self.domains[(cell_row, cell_col)] == {value}:
                     self.domains[(cell_row, col)].discard(value)
                     if len(self.domains[(cell_row, col)]) == 0:
@@ -70,7 +76,8 @@ class SudokuBoard:
             for col in range(3):
                 if box_start_row + row == cell_row and box_start_col + col == cell_col:
                     continue
-                for value in self.domains[(box_start_row + row, box_start_col + col)]:
+                revised_domain = self.domains[(box_start_row + row, box_start_col + col)].copy()
+                for value in revised_domain:
                     if self.domains[(cell_row, cell_col)] == {value}:
                         self.domains[(box_start_row + row, box_start_col + col)].discard(value)
                         if len(self.domains[(box_start_row + row, box_start_col + col)]) == 0:
@@ -176,15 +183,15 @@ if __name__ == "__main__":
     board = SudokuBoard()
     
     solvable_board = [
-        [0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 3, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
     board.fill(solvable_board)
 
