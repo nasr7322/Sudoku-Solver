@@ -21,8 +21,10 @@ class SudokuUtils:
 
     @staticmethod
     def solve_sudoku(board, cnt=[], check_uniqueness=False):
+
         if check_uniqueness and cnt[0] > 1:
             return
+        
         for row in range(9):
             for col in range(9):
                 if board[row][col] == 0:
@@ -36,8 +38,10 @@ class SudokuUtils:
                                 return True
                             board[row][col] = 0
                     return False
+                
         if not check_uniqueness:
             return True
+        
         cnt[0] += 1
 
 
@@ -57,7 +61,6 @@ class SudokuUtils:
         for row, col in cells:
             temp = puzzle[row][col]
             puzzle[row][col] = 0
-
             if not SudokuUtils.is_unique_solution(puzzle.copy()):
                 puzzle[row][col] = temp
 
