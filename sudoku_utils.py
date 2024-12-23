@@ -80,10 +80,16 @@ class SudokuUtils:
         return puzzle
 
 
+    @staticmethod
+    def is_solvable(board):
+        return SudokuUtils.solve_sudoku(board.copy())
+
+
 
 if __name__ == "__main__":
     puzzle = SudokuUtils.generate_sudoku(non_empty_cells=50)
     print("Generated Sudoku Puzzle:")
     print(puzzle)
     print(np.count_nonzero(puzzle))
+    print(SudokuUtils.is_solvable(puzzle))
 
