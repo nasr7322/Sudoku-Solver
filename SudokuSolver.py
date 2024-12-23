@@ -5,17 +5,19 @@ from SudokuBoard import SudokuBoard
 class SudokuSolver:
     def __init__(self, board: SudokuBoard):
         self.board = board
+        self.steps = []
 
     def backtracking_search(self):
         if self.board.is_complete():
             return True
         cell = self.select_variable()
         for value in self.order_domain_values(cell):
-            self.original_board = copy.deepcopy(self.board)
+            original_board = copy.deepcopy(self.board)
             if self.board.move(cell[0], cell[1], value):
                 if self.backtracking_search():
+                    self.steps.append((cell, value))
                     return True
-                self.board = self.original_board
+                self.board = original_board
         return False
     
     def select_variable(self):
@@ -51,7 +53,8 @@ class SudokuSolver:
         return sorted(self.board.domains[cell], key=lambda value: values_score[value])
 
     def solve(self):
-        return self.backtracking_search()
+        self.backtracking_search()
+        return self.steps.reverse()
     
 if __name__ == "__main__":
     board = SudokuBoard()

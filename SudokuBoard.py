@@ -16,8 +16,21 @@ class SudokuBoard:
                     self.move(row, col, grid[row][col])
         return
     
-    def is_valid_move(self, row, col, value):
-        return self.arc_consistency(row, col, value)[0]
+    def is_valid_move(self, row, col, value):        
+        for i in range(self.size):
+            if self.grid[row][i] == value or self.grid[i][col] == value:
+                if i != col and i != row:
+                    return False
+        # checking 3 * 3 boxes
+        box_start_row = (row // 3) * 3
+        box_start_col = (col // 3) * 3
+        for i in range(3):
+            for j in range(3):
+                if self.grid[box_start_row + i][box_start_col + j] == value:
+                    if box_start_row + i != row and box_start_col + j != col:
+                        return False
+
+        return True
 
     def move(self, row, col, value):
         valid, changed_domains = self.arc_consistency(row, col, value)
@@ -29,7 +42,7 @@ class SudokuBoard:
         self.print_changed_domains(changed_domains)
         return True
 
-    def arc_consistency(self, cell_row, cell_col, cell_value):
+    def arc_consistency(self, cell_row, cell_col, cell_value, alter_table=True):
         constraints_queue = queue.Queue()
         self.original_domains = copy.deepcopy(self.domains)
         self.domains[(cell_row, cell_col)] = {cell_value}
@@ -44,6 +57,10 @@ class SudokuBoard:
             if not self.revise_neighbors(row, col, constraints_queue):
                 self.domains = self.original_domains
                 return False, {}
+
+        if not alter_table:
+            self.domains = self.original_domains
+            return True, {}
 
         return True, {cell: (self.original_domains[cell].copy(), self.domains[cell].copy()) for cell in self.domains if self.original_domains[cell] != self.domains[cell]}
     
