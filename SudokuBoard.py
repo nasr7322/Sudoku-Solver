@@ -18,14 +18,16 @@ class SudokuBoard:
         # checking rows and cols
         for i in range(self.size):
             if self.grid[row][i] == value or self.grid[i][col] == value:
-                return False
+                if i != col and i != row:
+                    return False
         # checking 3 * 3 boxes
         box_start_row = (row // 3) * 3
         box_start_col = (col // 3) * 3
         for i in range(3):
             for j in range(3):
                 if self.grid[box_start_row + i][box_start_col + j] == value:
-                    return False
+                    if box_start_row + i != row and box_start_col + j != col:
+                        return False
 
         return True
 
@@ -36,36 +38,44 @@ class SudokuBoard:
         self.print_changed_domains(changed_domains)
 
     def update_domain(self, row, col, value):
-        self.domains[(row, col)] = set()
-        changed_domains = {}
-        for i in range(self.size):
-            if value in self.domains[(row, i)]:
-                if (row, i) not in changed_domains:
-                    changed_domains[(row, i)] = (self.domains[(row, i)].copy(), set())
-                self.domains[(row, i)].discard(value)
-                # store changed domains for printing
-                changed_domains[(row, i)] = (changed_domains[(row, i)][0], self.domains[(row, i)].copy())
-                
-            if value in self.domains[(i, col)]:
-                if (i, col) not in changed_domains:
-                    changed_domains[(i, col)] = (self.domains[(i, col)].copy(), set())
-                self.domains[(i, col)].discard(value)
-                # store changed domains for printing
-                changed_domains[(i, col)] = (changed_domains[(i, col)][0], self.domains[(i, col)].copy())
-        
-        box_start_row = (row // 3) * 3
-        box_start_col = (col // 3) * 3
-        for i in range(3):
-            for j in range(3):
-                cell = (box_start_row + i, box_start_col + j)
-                if value in self.domains[cell]:
-                    if cell not in changed_domains:
-                        changed_domains[cell] = (self.domains[cell].copy(), set())
-                    self.domains[cell].discard(value)
-                    # store changed domains for printing
-                    changed_domains[cell] = (changed_domains[cell][0], self.domains[cell].copy())
+            # Dictionary to store the original and updated domains of affected cells
+            affected_domains = {}
+            
+            # Store the original domain and update the domain of the current cell
+            affected_domains[(row, col)] = (self.domains[(row, col)].copy(), {value})
+            self.domains[(row, col)] = {value}
+            
+            # Update the domains of cells in the same row and column
+            for i in range(self.size):
+                # Update row
+                if value in self.domains[(row, i)] and i != col:
+                    if (row, i) not in affected_domains:
+                        affected_domains[(row, i)] = (self.domains[(row, i)].copy(), set())
+                    self.domains[(row, i)].discard(value)
+                    affected_domains[(row, i)] = (affected_domains[(row, i)][0], self.domains[(row, i)].copy())
                     
-        return changed_domains
+                # Update column
+                if value in self.domains[(i, col)] and i!= row:
+                    if (i, col) not in affected_domains:
+                        affected_domains[(i, col)] = (self.domains[(i, col)].copy(), set())
+                    self.domains[(i, col)].discard(value)
+                    affected_domains[(i, col)] = (affected_domains[(i, col)][0], self.domains[(i, col)].copy())
+            
+            # Calculate the starting row and column of the 3x3 box
+            box_start_row = (row // 3) * 3
+            box_start_col = (col // 3) * 3
+            
+            # Update the domains of cells in the same 3x3 box
+            for i in range(3):
+                for j in range(3):
+                    cell = (box_start_row + i, box_start_col + j)
+                    if value in self.domains[cell] and cell != (row, col):
+                        if cell not in affected_domains:
+                            affected_domains[cell] = (self.domains[cell].copy(), set())
+                        self.domains[cell].discard(value)
+                        affected_domains[cell] = (affected_domains[cell][0], self.domains[cell].copy())
+                        
+            return affected_domains
 
     def is_complete(self):
         # Check if the board is completely filled
@@ -79,14 +89,11 @@ class SudokuBoard:
         # Check if the board is valid even if not filled
         for row in range(self.size):
             for col in range(self.size):
-                if self.grid[row][col] == 0:
-                    continue
                 value = self.grid[row][col]
-                self.grid[row][col] = 0
+                if value == 0:
+                    continue
                 if not self.is_valid_move(row, col, value):
-                    self.grid[row][col] = value
                     return False
-                self.grid[row][col] = value
         return True
     
     def is_valid_solution(self):
@@ -128,15 +135,15 @@ if __name__ == "__main__":
     board = SudokuBoard()
     
     solvable_board = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 3, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [2, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
     board.fill(solvable_board)
 
