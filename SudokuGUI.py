@@ -92,7 +92,7 @@ class SudokuGUI:
         for i in range(9):
             row_entries = []
             for j in range(9):
-                entry = ctk.CTkEntry(enter_board_window, width=40, height=40,justify="center",font=("Helvetica", 20), fg_color="white")
+                entry = ctk.CTkEntry(enter_board_window, width=40, height=40,justify="center",font=("Helvetica", 20), fg_color=None)
                 entry.grid(row=i+1, column=j)
                 row_entries.append(entry)
             self.board_entries.append(row_entries)
@@ -140,7 +140,7 @@ class SudokuGUI:
         for i in range(9):
             row_entries = []
             for j in range(9):
-                entry = ctk.CTkEntry(player_window, width=40, height=40, justify="center", font=("Helvetica", 20), fg_color="white")
+                entry = ctk.CTkEntry(player_window, width=40, height=40, justify="center", font=("Helvetica", 20), fg_color=None)
                 entry.grid(row=i+1, column=j)
                 entry.bind("<KeyRelease>", lambda event, row=i, col=j: self.validate_move(event, row, col))
                 row_entries.append(entry)
@@ -154,14 +154,14 @@ class SudokuGUI:
         if value.isdigit() and 1 <= int(value) <= 9:
             board = self.get_current_board()
             if SudokuUtils.is_valid_move(board, row, col, int(value)):
-                event.widget.configure(bg="white")
+                self.board_entries[row][col].configure(border_color="white")
             else:
-                event.widget.configure(bg="red")
+                self.board_entries[row][col].configure(border_color="red")
         else:
             if value == '':
-                event.widget.configure(bg="white")
+                self.board_entries[row][col].configure(border_color="white")
             else:
-                event.widget.configure(bg="red")
+                self.board_entries[row][col].configure(border_color="red")
 
     def get_current_board(self):
         board = []
@@ -204,7 +204,7 @@ class SudokuGUI:
         for i in range(9):
             row_entries = []
             for j in range(9):
-                entry = ctk.CTkEntry(board_window, width=40, height=40,justify="center",font=("Helvetica", 20), fg_color="white")
+                entry = ctk.CTkEntry(board_window, width=40, height=40,justify="center",font=("Helvetica", 20), fg_color="transparent")
                 entry.grid(row=i+1, column=j)
                 entry.insert(0, str(board[i][j]) if board[i][j] != 0 else '')
                 row_entries.append(entry)
@@ -226,10 +226,10 @@ class SudokuGUI:
             sudoku_board.move(cell[0], cell[1], value, True)
             self.board_entries[cell[0]][cell[1]].delete(0, 'end')
             self.board_entries[cell[0]][cell[1]].insert(0, str(value))
-            self.board_entries[cell[0]][cell[1]].configure(fg_color="lightgreen")
+            self.board_entries[cell[0]][cell[1]].configure(border_color="lightgreen")
             self.root.update()
             self.root.after(500)
-            self.board_entries[cell[0]][cell[1]].configure(fg_color="white")
+            self.board_entries[cell[0]][cell[1]].configure(border_color="black")
 
 if __name__ == "__main__":
     root = ctk.CTk()
