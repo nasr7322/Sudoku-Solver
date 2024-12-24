@@ -7,14 +7,14 @@ class SudokuUtils:
     def is_valid_move(board, row, col, value):
         # checking rows and cols
         for i in range(9):
-            if board[row][i] == value or board[i][col] == value:
+            if i != col and board[row][i] == value or i != row and board[i][col] == value:
                 return False
         # checking 3 * 3 boxes
         box_start_row = (row // 3) * 3
         box_start_col = (col // 3) * 3
         for i in range(3):
             for j in range(3):
-                if board[box_start_row + i][box_start_col + j] == value:
+                if box_start_col+j != col and box_start_row+i !=row and board[box_start_row + i][box_start_col + j] == value:
                     return False
         return True
 
@@ -87,6 +87,35 @@ class SudokuUtils:
     def is_solvable(board):
         return SudokuUtils.solve_sudoku(board.copy())
 
+    @staticmethod
+    def is_complete(board):
+        # Check if the board is completely filled
+        for row in range(9):
+            for col in range(9):
+                if board[row][col] == 0:
+                    return False
+        return True
+    
+    @staticmethod
+    def is_valid_board(board):
+        # Check if the board is valid even if not filled
+        for row in range(9):
+            for col in range(9):
+                value = board[row][col]
+                if value == 0:
+                    continue
+                if not SudokuUtils.is_valid_move(board, row, col, value):
+                    return False
+        return True
+    
+    @staticmethod
+    def is_valid_solution(board):
+        return SudokuUtils.is_complete(board) and SudokuUtils.is_valid_board(board)
+    
+    @staticmethod
+    def print_board(board):
+        for row in board:
+            print(row)
 
 
 if __name__ == "__main__":
