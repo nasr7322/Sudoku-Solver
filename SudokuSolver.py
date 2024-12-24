@@ -1,4 +1,5 @@
 import copy
+import time
 
 from SudokuBoard import SudokuBoard
 
@@ -6,8 +7,11 @@ class SudokuSolver:
     def __init__(self, board: SudokuBoard):
         self.board = board
         self.steps = []
+        self.iterations = 0
+        self.time = 0
 
     def backtracking_search(self):
+        self.iterations += 1
         if self.board.is_complete():
             return True
         cell = self.select_variable()
@@ -53,7 +57,10 @@ class SudokuSolver:
         return sorted(self.board.domains[cell], key=lambda value: values_score[value])
 
     def solve(self):
+        start_time = time.time()
         self.backtracking_search()
+        end_time = time.time()
+        self.time = end_time - start_time
         return self.steps.reverse()
     
 if __name__ == "__main__":
