@@ -121,6 +121,9 @@ class SudokuUtils:
 
 if __name__ == "__main__":
     puzzle = SudokuUtils.generate_sudoku(non_empty_cells=50)
+    board = [[0 for _ in range(9)] for _ in range(9)]
+    print(SudokuUtils.is_unique_solution(board))
+    
     print("Generated Sudoku Puzzle:")
     print(puzzle)
     print(np.count_nonzero(puzzle))

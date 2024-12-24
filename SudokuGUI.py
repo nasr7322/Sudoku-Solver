@@ -112,17 +112,23 @@ class SudokuGUI:
                 row.append(int(value) if value.isdigit() else 0)
             board.append(row)
             
-            
-        # if not SudokuUtils.is_valid_board(board):
-        #     messagebox.showerror("Invalid Board", "The entered board is not valid.")
-        #     return
+        test_board = {}
+        test_board = [row[:] for row in board]
+        
+        if not SudokuUtils.is_valid_board(test_board):
+            messagebox.showerror("Invalid Board", "The entered board is not valid.")
+            return
 
-        # if not SudokuUtils.is_solvable(board):
-        #     messagebox.showerror("Invalid Board", "The entered board is not solvable.")
-        #     return
+        test_board = [row[:] for row in board]
 
-        # if not SudokuUtils.is_unique_solution(board):
-        #     messagebox.showerror("Warning", "The entered board does not have a unique solution.")
+        if not SudokuUtils.is_solvable(test_board):
+            messagebox.showerror("Invalid Board", "The entered board is not solvable.")
+            return
+        
+        test_board = [row[:] for row in board]
+
+        if not SudokuUtils.is_unique_solution(test_board):
+            messagebox.showerror("Warning", "The entered board does not have a unique solution.")
 
         self.display_board(board)
 
