@@ -23,7 +23,7 @@ class SudokuSolver:
     def select_variable(self):
         min_domain = 2 ** 31
         chosen_cell = None
-        for cell in self.board.domains:
+        for cell in self.board.domains: ## TODO: change to self.board.find_empty
             if self.board.grid[cell[0]][cell[1]] == 0 and len(self.board.domains[cell]) < min_domain:
                 min_domain = len(self.board.domains[cell])
                 chosen_cell = cell
@@ -58,30 +58,33 @@ class SudokuSolver:
     
 if __name__ == "__main__":
     board = SudokuBoard()
-    # sudoku = [  [4, 3, 5, 2, 6, 9, 7, 8, 1], 
-    #             [6, 8, 2, 5, 7, 1, 4, 9, 3], 
+    # sudoku = [  [4, 3, 5, 2, 6, 9, 7, 8, 1],
+    #             [6, 8, 2, 5, 7, 1, 4, 9, 3],
     #             [1, 9, 7, 8, 3, 4, 5, 6, 2],
-    #             [8, 2, 6, 1, 9, 5, 3, 4, 7], 
-    #             [3, 7, 4, 6, 8, 2, 9, 1, 5], 
+    #             [8, 2, 6, 1, 9, 5, 3, 4, 7],
+    #             [3, 7, 4, 6, 8, 2, 9, 1, 5],
     #             [9, 5, 1, 7, 4, 3, 6, 2, 8],
-    #             [5, 1, 9, 3, 2, 6, 8, 7, 4], 
-    #             [2, 4, 8, 9, 5, 7, 1, 3, 6], 
+    #             [5, 1, 9, 3, 2, 6, 8, 7, 4],
+    #             [2, 4, 8, 9, 5, 7, 1, 3, 6],
     #             [7, 6, 3, 4, 1, 8, 2, 5, 9]]
-    sudoku = [  [0, 3, 5, 2, 6, 9, 7, 8, 1], 
-                [6, 8, 0, 5, 7, 1, 4, 9, 3], 
+    sudoku = [  [0, 3, 5, 2, 6, 9, 7, 8, 1],
+                [6, 8, 0, 5, 7, 1, 4, 9, 3],
                 [1, 9, 7, 8, 3, 4, 5, 6, 2],
-                [8, 2, 6, 1, 9, 5, 3, 4, 7], 
-                [3, 7, 4, 6, 8, 2, 9, 1, 5], 
+                [8, 2, 6, 1, 9, 5, 3, 4, 7],
+                [3, 7, 4, 6, 8, 2, 9, 1, 5],
                 [9, 5, 1, 7, 4, 3, 6, 2, 8],
-                [5, 1, 9, 3, 2, 6, 8, 7, 4], 
-                [2, 4, 8, 9, 5, 7, 1, 3, 6], 
+                [5, 1, 9, 3, 2, 6, 8, 7, 4],
+                [2, 4, 8, 9, 5, 7, 1, 3, 6],
                 [7, 6, 3, 4, 1, 8, 2, 5, 9]]
+    
     board.fill(sudoku)
     solver = SudokuSolver(board)
+    print("############### Started Solving ###############")
+    
     solver.solve()
     if len(solver.steps) > 0:
-        for step in solver.steps:
-            print(f"Move: {step[0]} -> {step[1]}")
+        # for step in solver.steps:
+        #     print(f"Move: {step[0]} -> {step[1]}")
         print("Sudoku solved:")
         for row in board.grid:
             print(row)
