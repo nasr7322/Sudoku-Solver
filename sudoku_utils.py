@@ -5,6 +5,8 @@ class SudokuUtils:
 
     @staticmethod
     def is_valid_move(board, row, col, value):
+        if not 1 <= int(value) <= 9:
+            return False
         # checking rows and cols
         for i in range(9):
             if i != col and board[row][i] == value or i != row and board[i][col] == value:

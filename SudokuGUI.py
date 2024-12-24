@@ -111,9 +111,6 @@ class SudokuGUI:
                 value = entry.get()
                 row.append(int(value) if value.isdigit() else 0)
             board.append(row)
-
-        
-        test_board = board.copy()
             
         # Validate the board if solvable and if unique
         if not SudokuUtils.is_valid_board(board):
@@ -211,6 +208,7 @@ class SudokuGUI:
                 entry = ctk.CTkEntry(board_window, width=40, height=40,justify="center",font=("Helvetica", 20), fg_color="transparent")
                 entry.grid(row=i+1, column=j)
                 entry.insert(0, str(board[i][j]) if board[i][j] != 0 else '')
+                entry.configure(state="readonly")
                 row_entries.append(entry)
             self.board_entries.append(row_entries)
 
@@ -228,12 +226,12 @@ class SudokuGUI:
         for step in steps:
             cell, value = step
             sudoku_board.move(cell[0], cell[1], value, True)
+            self.board_entries[cell[0]][cell[1]].configure(border_color="lightgreen",state="normal")
             self.board_entries[cell[0]][cell[1]].delete(0, 'end')
             self.board_entries[cell[0]][cell[1]].insert(0, str(value))
-            self.board_entries[cell[0]][cell[1]].configure(border_color="lightgreen")
             self.root.update()
             self.root.after(500)
-            self.board_entries[cell[0]][cell[1]].configure(border_color="black")
+            self.board_entries[cell[0]][cell[1]].configure(border_color="black",state="readonly")
 
 if __name__ == "__main__":
     root = ctk.CTk()
