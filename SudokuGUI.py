@@ -131,9 +131,36 @@ class SudokuGUI:
             messagebox.showerror("Warning", "The entered board does not have a unique solution.")
 
         self.display_board(board)
-
+        
     def player_mode(self):
-        # Create a new window for the player mode
+        # Create a new window for difficulty selection
+        difficulty_window = ctk.CTkToplevel(self.root)
+        difficulty_window.title("Select Difficulty")
+        difficulty_window.geometry("300x200")
+        difficulty_window.attributes('-topmost', True)
+
+        ctk.CTkLabel(difficulty_window, text="Select Difficulty:").pack(pady=20)
+
+        # Create a combobox for difficulty selection
+        self.difficulty_var = ctk.StringVar()
+        self.difficulty_var.set("Easy")
+        difficulty_combobox = ctk.CTkComboBox(difficulty_window, variable=self.difficulty_var, values=['Easy', 'Medium', 'Hard'])
+        difficulty_combobox.pack(pady=10)
+
+        # Create a button to start the Player Mode with the selected difficulty
+        start_button = ctk.CTkButton(difficulty_window, text="Start", command=self.start_player_mode)
+        start_button.pack(pady=10)
+
+    def start_player_mode(self):
+        difficulty = self.difficulty_var.get()
+        if difficulty:
+            filled_cells = {'Easy': 60, 'Medium': 45, 'Hard': 30}[difficulty]
+            puzzle = SudokuUtils.generate_sudoku(filled_cells)
+            self.display_player_board(puzzle)
+        else:
+            pass
+
+    def display_player_board(self, board):
         player_window = ctk.CTkToplevel(self.root)
         player_window.title("Player Mode")
         player_window.geometry(f"{self.size}x{self.size}")
@@ -149,6 +176,9 @@ class SudokuGUI:
             for j in range(9):
                 entry = ctk.CTkEntry(player_window, width=40, height=40, justify="center", font=("Helvetica", 20), fg_color=None)
                 entry.grid(row=i+1, column=j)
+                entry.insert(0, str(board[i][j]) if board[i][j] != 0 else '')
+                if board[i][j] != 0:
+                    entry.configure(state="readonly")
                 entry.bind("<KeyRelease>", lambda event, row=i, col=j: self.validate_move(event, row, col))
                 row_entries.append(entry)
             self.board_entries.append(row_entries)
