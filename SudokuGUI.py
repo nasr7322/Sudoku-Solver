@@ -55,6 +55,8 @@ class SudokuGUI:
         difficulty_window = ctk.CTkToplevel(self.root)
         difficulty_window.title("Select Difficulty")
         difficulty_window.geometry("300x200")
+        difficulty_window.attributes('-topmost', True)
+
 
         ctk.CTkLabel(difficulty_window, text="Select Difficulty:").pack(pady=20)
 
@@ -83,6 +85,7 @@ class SudokuGUI:
         enter_board_window = ctk.CTkToplevel(self.root)
         enter_board_window.title("Enter Sudoku Board")
         enter_board_window.geometry(f"{self.size}x{self.size}")
+        enter_board_window.attributes('-topmost', True)
         
         for i in range(9):
             enter_board_window.grid_rowconfigure(i+1, weight=1 if i in range(9) else 3)
@@ -131,6 +134,7 @@ class SudokuGUI:
         player_window = ctk.CTkToplevel(self.root)
         player_window.title("Player Mode")
         player_window.geometry(f"{self.size}x{self.size}")
+        player_window.attributes('-topmost', True)
 
         for i in range(9):
             player_window.grid_rowconfigure(i+1, weight=1 if i in range(9) else 3)
