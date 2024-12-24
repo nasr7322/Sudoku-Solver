@@ -35,7 +35,8 @@ class SudokuBoard:
     def move(self, row, col, value, prnt=False):
         is_consistent, changed_domains = self.arc_consistency(row, col, value)
         if not is_consistent or not self.is_valid_move(row, col, value):
-            print(f"Invalid move: ({row}, {col}) -> {value}")
+            if prnt:
+                print(f"Invalid move: ({row}, {col}) -> {value}")
             return False
         self.grid[row][col] = value
         if prnt:
@@ -127,6 +128,7 @@ class SudokuBoard:
         print("Changed domains:")
         for cell, (old_domain, new_domain) in changed_domains.items():
             print(f"{cell}: {old_domain} => {new_domain}")
+        print("\n")
             
     def print_domains(self):
         for cell, domain in self.domains.items():

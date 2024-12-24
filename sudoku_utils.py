@@ -53,7 +53,6 @@ class SudokuUtils:
         SudokuUtils.solve_sudoku(board)
         return board
 
-
     @staticmethod
     def remove_cells(board, non_empty_cells):
         puzzle = board.copy()

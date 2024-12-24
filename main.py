@@ -1,7 +1,7 @@
-import tkinter as tk
+import customtkinter as ctk
 from SudokuGUI import SudokuGUI
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ctk.CTk()
     app = SudokuGUI(root)
     root.mainloop()

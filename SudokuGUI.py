@@ -73,7 +73,7 @@ class SudokuGUI:
     def start_random_board_ai_mode(self):
         difficulty = self.difficulty_var.get()
         if difficulty:
-            filled_cells = {'Easy': 60, 'Medium': 50, 'Hard': 40}[difficulty]
+            filled_cells = {'Easy': 60, 'Medium': 45, 'Hard': 30}[difficulty]
             puzzle = SudokuUtils.generate_sudoku(filled_cells)
             self.display_board(puzzle)
         else:
@@ -112,17 +112,17 @@ class SudokuGUI:
                 row.append(int(value) if value.isdigit() else 0)
             board.append(row)
             
-        # Validate the board if solvable and if unique
-        if not SudokuUtils.is_valid_board(board):
-            messagebox.showerror("Invalid Board", "The entered board is not valid.")
-            return
+            
+        # if not SudokuUtils.is_valid_board(board):
+        #     messagebox.showerror("Invalid Board", "The entered board is not valid.")
+        #     return
 
-        if not SudokuUtils.is_solvable(board):
-            messagebox.showerror("Invalid Board", "The entered board is not solvable.")
-            return
+        # if not SudokuUtils.is_solvable(board):
+        #     messagebox.showerror("Invalid Board", "The entered board is not solvable.")
+        #     return
 
-        if not SudokuUtils.is_unique_solution(board):
-            messagebox.showerror("Warning", "The entered board does not have a unique solution.")
+        # if not SudokuUtils.is_unique_solution(board):
+        #     messagebox.showerror("Warning", "The entered board does not have a unique solution.")
 
         self.display_board(board)
 
@@ -216,11 +216,14 @@ class SudokuGUI:
         solve_button.grid(row=10, column=0, columnspan=9, pady=10)
 
     def solve_board(self, board):
+        current_board = SudokuBoard()
+        current_board.fill(board)
         solved_board = SudokuBoard()
-        solved_board.fill(board)
+        solved_board.fill(current_board.grid)
         solver = SudokuSolver(solved_board)
         solver.solve()
-        self.update_board(solved_board, solver.steps)
+        self.update_board(current_board, solver.steps)
+        print("Solved in: ", solver.time, " Seconds, and ", solver.iterations, " Steps.")
 
     def update_board(self,sudoku_board, steps):
         for step in steps:
